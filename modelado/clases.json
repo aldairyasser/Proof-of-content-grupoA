@@ -1,0 +1,10 @@
+{
+  "campo_baseball": 0,
+  "campo_golf": 1,
+  "cancha_basket": 2,
+  "estacionamiento": 3,
+  "pista_tenis": 4,
+  "puentes": 5,
+  "rotondas": 6,
+  "vias_tren": 7
+}
