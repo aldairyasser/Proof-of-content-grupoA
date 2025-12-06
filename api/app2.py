@@ -69,19 +69,18 @@ def predict():
 
     # Preprocesado igual que entrenamiento
     imagen = imagen.resize(IMG_SIZE)
-    imagen = np.array(imagen) / 255.0
+    imagen = np.array(imagen).astype("float32")
     imagen = np.expand_dims(imagen, axis=0)  # (1, 224, 224, 3)
 
     # Predicción
-    pred_tensor = model_importado(imagen)[0]
-    pred = pred_tensor.numpy()
+    pred = model_importado.predict(imagen, verbose=0)[0]
     clase_idx = np.argmax(pred)
     clase_nombre = CLASES[clase_idx]
 
     return jsonify({
+        "clase_nombre": clase_nombre,
         "probabilidades": pred.tolist(),
-        "clase_idx": int(clase_idx),
-        "clase_nombre": clase_nombre
+        "clase_idx": int(clase_idx)
     })
 
 '''def predict():
