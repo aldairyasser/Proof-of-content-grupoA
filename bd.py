@@ -5,7 +5,7 @@
 import sqlite3
 
 conn = sqlite3.connect("predicciones.db")     # Esto es como la puerta para crear la base de datos, crear tablas y todo lo relacionado con esto
-cursor = conn.cursorrr()      # Esto es como el tradutor que intermedia entre Python y el lenguaje SQL para ejecutar comandos SQL
+cursor = conn.cursor()      # Esto es como el tradutor que intermedia entre Python y el lenguaje SQL para ejecutar comandos SQL
 
 
 # Esto es la tabla que se va a usar reciviendo los datos de API
