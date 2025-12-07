@@ -7,6 +7,9 @@ import tensorflow as tf
 import json
 from flask import Flask, request, jsonify
 from datetime import datetime
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'data-base'))
+import mi_bd
 
 app = Flask(__name__)
 
@@ -54,7 +57,6 @@ with open(class_path, "r") as f:
 # Convertimos {clase → índice} a lista ordenada:
 clases = [nombre for nombre, idx in sorted(indices.items(), key=lambda x: x[1])]
 
-print("Clases detectadas:", clases)
 @app.route("/predict", methods=["POST"])
 def predict():
 
@@ -74,32 +76,63 @@ def predict():
 
     # Predicción
     pred = model_importado.predict(imagen, verbose=0)[0]
+    predict_proba = pred.tolist() # % de todas la clases
+    acc = round(float(np.max(pred))*100, 2)
     clase_idx = np.argmax(pred)
     clase_nombre = CLASES[clase_idx]
 
     return jsonify({
         "clase_nombre": clase_nombre,
-        "probabilidades": pred.tolist(),
-        "clase_idx": int(clase_idx)
+        "probabilidades": acc
     })
 
-'''def predict():
-    datos = request.json.get("valores")
+# -------------------------------
+# 3) Envio de predicción y guardado en BD
+# -------------------------------
 
-    if not datos:
-        return jsonify({"error": "Debes enviar una lista en 'valores'"}), 400
+@app.route("/predict_save", methods=["POST"])
+def predic_save():
+        
+        mi_bd.inicia_bd()
 
-    arr = np.array([datos])
-    pred = model.predict(arr)[0]
+        data = request.get_json()   #  Se agrego get_json()
 
-    return jsonify({
-        "prediccion": str(pred),
-        "clase_nombre": clases[pred] if pred < len(clases) else "desconocida"
-    })'''
+        nombre = data["clase_nombre"]
+        acc = data["probabilidades"]
 
+        # Guardar en BD
+        id_prediccion = mi_bd.mete_prediccion(nombre, acc)
+
+        return jsonify({"El id": id_prediccion})
 
 # -------------------------------
-# 3) Probabilidad de incendio
+# 4) Mostrar base de datos
+# -------------------------------
+
+@app.route("/show_data_base", methods=["GET"])
+def showdatabase():
+    registros = mi_bd.full_tabla()
+    return jsonify(registros)
+
+# -------------------------------
+# 5) Predicción por ID (FUTURA MEJORA LINK DE LA IMÁGEN)
+# -------------------------------
+
+@app.route('/prediccion/<int:id>', methods=['GET']) 
+def obtener_prediccion(id):
+    try: 
+        fila = mi_bd.search_id(id)
+
+        if fila is None:
+            return jsonify({"error": "Predicción no encontrada"}), 404
+        
+        return jsonify(fila)
+    
+    except Exception as e:
+        return jsonify({"error": "Error interno", "detalle": str(e)}), 500  
+
+# -------------------------------
+# ) Probabilidad de incendio
 # -------------------------------
 @app.route("/fire_probability", methods=["POST"])
 def fire_probability():
@@ -150,7 +183,7 @@ def fire_probability():
         })
 
 # -------------------------------
-# 4) Monitoreo
+# ) Monitoreo
 # -------------------------------
 @app.route("/health", methods=["GET"])
 def health():
@@ -161,7 +194,7 @@ def health():
     })
 
 # -------------------------------
-# 5) Información
+# ) Información
 # -------------------------------
 @app.route("/info", methods=["GET"])
 def info():
@@ -187,6 +220,34 @@ def info():
             "formato_entrada": "Base64 / JSON"
         }
     })
+
+# -------------------------------
+# ) Listar todas las predicciones
+# -------------------------------
+
+@app.route("/predicciones", methods=["GET"])
+def obtener_predicciones():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM prediccion")
+        filas = cursor.fetchall()
+        conn.close()
+
+        lista = []
+        for fila in filas:
+            lista.append({
+                "id": fila["id"],
+                "prediccion": fila["prediccion"],
+                "probabilidad": fila["probabilidad"],
+                "date": fila["date"]
+            })
+
+        return jsonify(lista)
+
+    except Exception as e:
+        return jsonify({"error": "Error interno", "detalle": str(e)}), 500
 # -------------------------------
 # Ejecutar app
 # -------------------------------
