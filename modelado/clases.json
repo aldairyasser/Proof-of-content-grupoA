@@ -1,10 +1,12 @@
 {
-    "bosques": 0,
-    "campo_baseball": 1,
-    "campo_golf": 2,
-    "cancha_basket": 3,
-    "estacionamiento": 4,
-    "pista_tenis": 5,
-    "puentes": 6,
-    "vias_tren": 7
+    "Bosques": 0,
+    "Campo de golf": 1,
+    "Casas": 2,
+    "Central termoelectrica": 3,
+    "Chaparral": 4,
+    "Cultivos": 5,
+    "Humedal": 6,
+    "Iglesias": 7,
+    "Montania": 8,
+    "Prado": 9
 }
