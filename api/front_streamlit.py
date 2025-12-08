@@ -14,7 +14,7 @@ menu = st.sidebar.selectbox("PÁGINAS",
                              "🆔 PREDICCION POR ID"))
 
 if menu == "🏠 HOME":
-    mensaje = requests.get("http://127.0.0.1:5000/")
+    mensaje = requests.get("http://127.0.0.1:5001/")
     st.subheader(mensaje.json())
 
 elif menu == "🎯 PREDECIR":
@@ -43,7 +43,7 @@ elif menu == "🎯 PREDECIR":
 
             # Llamamos al endpoint /predict de Flask
             prediccion = requests.post(
-                "http://127.0.0.1:5000/predict", 
+                "http://127.0.0.1:5001/predict", 
                 json=datos
             )
             st.session_state["prediccion"] = prediccion
@@ -61,7 +61,7 @@ elif menu == "🎯 PREDECIR":
 
             # Llamamos al endpoint /predict de Flask
             respuesta = requests.post(
-                "http://127.0.0.1:5000/predict_save", 
+                "http://127.0.0.1:5001/predict_save", 
                 json=datos_guardados
             )
 
@@ -74,7 +74,7 @@ elif menu == "🎯 PREDECIR":
 elif menu == "🗄️ BASE DE DATOS":
     #st.title
     if st.button("Mostrar base de datos"):
-        tabla = requests.get("http://127.0.0.1:5000/show_data_base")
+        tabla = requests.get("http://127.0.0.1:5001/show_data_base")
         st.write("Historial de predicciones:")
         df = pd.DataFrame(tabla.json())
         
@@ -85,7 +85,7 @@ elif menu == "🗄️ BASE DE DATOS":
 
 elif menu == "🆔 PREDICCION POR ID":
     st.subheader("Buscar prediccion por ID")
-    tabla = requests.get("http://127.0.0.1:5000/show_data_base")
+    tabla = requests.get("http://127.0.0.1:5001/show_data_base")
     df = pd.DataFrame(tabla.json())    
     max = len(df)
 
@@ -98,7 +98,7 @@ elif menu == "🆔 PREDICCION POR ID":
     
     if (id_buscar<=max):
         if st.button("Buscar Prediccion"):
-            respuesta = requests.get(f"http://127.0.0.1:5000/prediccion/{id_buscar}")
+            respuesta = requests.get(f"http://127.0.0.1:5001/prediccion/{id_buscar}")
 
             data = respuesta.json()
 
