@@ -205,7 +205,7 @@ def fire_probability():
         })
 
 # -------------------------------
-# ) Monitoreo
+# 8) Monitoreo
 # -------------------------------
 @app.route("/health", methods=["GET"])
 def health():
@@ -216,7 +216,7 @@ def health():
     })
 
 # -------------------------------
-# ) Información
+# 9) Información
 # -------------------------------
 @app.route("/info", methods=["GET"])
 def info():
@@ -242,6 +242,31 @@ def info():
             "formato_entrada": "Base64 / JSON"
         }
     })
+
+
+# -------------------------------
+# 10) ID via Query
+# -------------------------------
+
+@app.route('/prediccion_query', methods=['GET'])
+def obtener_prediccion_query():
+    try:
+        id_pred = request.args.get("id", type=int)
+
+        if id_pred is None:
+            return jsonify({"error": "Debes enviar ?id=NUMERO"}), 400
+
+        fila = mi_bd.search_id(id_pred)
+
+        if fila is None:
+            return jsonify({"error": "Predicción no encontrada"}), 404
+
+        return jsonify(fila)
+
+    except Exception as e:
+        return jsonify({"error": "Error interno", "detalle": str(e)}), 500
+
+
 
 # -------------------------------
 # Ejecutar app
