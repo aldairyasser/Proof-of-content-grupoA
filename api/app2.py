@@ -46,7 +46,6 @@ def home():
 
 # -------------------------------
 # 2) Hacer una predicción
-# http://127.0.0.1:5000/predict
 # -------------------------------
 IMG_SIZE = (224, 224)
 class_path = os.path.join(base_path, '..', 'modelado', 'clases.json')
