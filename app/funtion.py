@@ -25,7 +25,7 @@ def home():
     model_path = os.path.join(base_path, 'img', 'portada1.jpeg')
     st.image(model_path, use_container_width="auto")
 
-    if requests.get("http://127.0.0.1:5000/"):
+    if requests.get("http://127.0.0.1:5001/"):
         st.markdown('''
 ## 🔥 FireVision AI — Detección Temprana de Riesgo de Incendio 🛰️
 
@@ -162,7 +162,7 @@ def predecir():
     img = None
 
     if uploaded_file1:
-        img = Image.open(uploaded_file1)  # Leer imagen con PIL
+        img = Image.open(uploaded_file1)
         
         if st.button("Ver imagen cargada"):
             st.image(img, width="stretch")
@@ -186,7 +186,7 @@ def predecir():
 
             # Consumimos al endpoint /predict de Flask
             prediccion = requests.post(
-                "http://127.0.0.1:5000/predict", 
+                "http://127.0.0.1:5001/predict", 
                 json=datos
             )
 
@@ -214,7 +214,7 @@ def predecir():
             else:
                 pred = st.session_state["prediccion"].json()
                 respuesta = requests.post(
-                    "http://127.0.0.1:5000/predict_save", 
+                    "http://127.0.0.1:5001/predict_save", 
                     json=pred
                 )
                 st.success("Guardado correctamente con:")
@@ -233,7 +233,7 @@ def mostrar_bd():
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
 
     if st.button("📄 Mostrar base de datos", width="stretch"):
-        tabla = requests.get("http://127.0.0.1:5000/show_data_base")
+        tabla = requests.get("http://127.0.0.1:5001/show_data_base")
         df = pd.DataFrame(tabla.json())
 
         st.dataframe(df[["id", "prediccion", "probabilidad", "fecha"]], width="stretch")
@@ -243,7 +243,7 @@ def mostrar_bd_id():
     st.subheader("🔎 Buscar predicción por ID 🔍")
     
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
-    tabla = requests.get("http://127.0.0.1:5000/show_data_base")
+    tabla = requests.get("http://127.0.0.1:5001/show_data_base")
     df = pd.DataFrame(tabla.json())    
     max_id = df["id"].max()
 
@@ -256,7 +256,7 @@ def mostrar_bd_id():
     st.caption("⚠️ Nota: Los IDs pueden no ser consecutivos si ya se han eliminado registros.")
 
     if st.button("Buscar Predicción"):
-        respuesta = requests.get(f"http://127.0.0.1:5000/predict/{id_buscar}")
+        respuesta = requests.get(f"http://127.0.0.1:5001/predict/{id_buscar}")
         
         if respuesta.status_code == 200:
             data = respuesta.json()
@@ -277,7 +277,7 @@ def borrar_prediccion_id():
 
     # Función auxiliar
     def cargar_bd():
-        tabla = requests.get("http://127.0.0.1:5000/show_data_base")
+        tabla = requests.get("http://127.0.0.1:5001/show_data_base")
         return pd.DataFrame(tabla.json())
 
     # Guardar BD en session_state para actualizar automaticamente
@@ -301,7 +301,7 @@ def borrar_prediccion_id():
 
 
     if st.button("🗑️ Eliminar Predicción", type="primary"):
-        respuesta = requests.delete(f"http://127.0.0.1:5000/delete_predict/{id_borrar}")
+        respuesta = requests.delete(f"http://127.0.0.1:5001/delete_predict/{id_borrar}")
 
         if respuesta.status_code == 200:
             st.success("Predicción eliminada correctamente")
