@@ -14,7 +14,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Función de la pantalla home
+# Función de la pantalla home 
 def home():
 
     st.title("Proof Of Content (PoC)")
@@ -25,7 +25,7 @@ def home():
     model_path = os.path.join(base_path, 'img', 'portada1.jpeg')
     st.image(model_path, use_container_width="auto")
 
-    if requests.get("http://127.0.0.1:5000/"):
+    if requests.get("http://127.0.0.1:5001/"):
         st.markdown('''
 ## 🔥 FireVision AI — Detección Temprana de Riesgo de Incendio 🛰️
 
@@ -125,7 +125,7 @@ Análisis de marrón, textura y cambios mes a mes.
 
     '''Explicar storytelling y caso de uso'''
 
-# Función para convertir una imagena a json (se llama en la siguiente función)
+# Función para convertir una imagena a json (se usa en la siguiente función)
 def imagen_a_json(imagen):
     buffer = BytesIO()
     
@@ -139,10 +139,18 @@ def imagen_a_json(imagen):
         "imagen_base64": imagen_codificada
     }
 
-# Función que predice una imagen pasado del front (POST y UPDATE)
+# Función que predice una imagen pasado del front (PATH) (POST)
 def predecir():
     st.subheader("🌄 Clasificador de biomas 🏞️")
 
+    with st.expander("📥 Descargar imágenes de test"):
+        with open("./data/test.zip", "rb") as f:
+            st.download_button(
+                label="Descargar ZIP con imágenes de test",
+                data=f,
+                file_name="test_images.zip",
+                mime="application/zip"
+            )
     # Lector de imágenes
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
     uploaded_file1 = st.file_uploader(
@@ -154,7 +162,7 @@ def predecir():
     img = None
 
     if uploaded_file1:
-        img = Image.open(uploaded_file1)  # Leer imagen con PIL
+        img = Image.open(uploaded_file1)
         
         if st.button("Ver imagen cargada"):
             st.image(img, width="stretch")
@@ -178,7 +186,7 @@ def predecir():
 
             # Consumimos al endpoint /predict de Flask
             prediccion = requests.post(
-                "http://127.0.0.1:5000/predict", 
+                "http://127.0.0.1:5001/predict", 
                 json=datos
             )
 
@@ -206,7 +214,7 @@ def predecir():
             else:
                 pred = st.session_state["prediccion"].json()
                 respuesta = requests.post(
-                    "http://127.0.0.1:5000/predict_save", 
+                    "http://127.0.0.1:5001/predict_save", 
                     json=pred
                 )
                 st.success("Guardado correctamente con:")
@@ -225,42 +233,79 @@ def mostrar_bd():
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
 
     if st.button("📄 Mostrar base de datos", width="stretch"):
-        tabla = requests.get("http://127.0.0.1:5000/show_data_base")
+        tabla = requests.get("http://127.0.0.1:5001/show_data_base")
         df = pd.DataFrame(tabla.json())
 
-        st.dataframe(df[["id", "prediccion", "probabilidad", "date"]], width="stretch")
+        st.dataframe(df[["id", "prediccion", "probabilidad", "fecha"]], width="stretch")
 
-# Función que devuelve la BD por id (Conección por argumento)
+# Función que devuelve la BD por id (Conección por argumento) / Query
 def mostrar_bd_id():
-    st.subheader("🔎 Buscar prediccion por ID 🔍")
+    st.subheader("🔎 Buscar predicción por ID 🔍")
     
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
-    tabla = requests.get("http://127.0.0.1:5000/show_data_base")
+    tabla = requests.get("http://127.0.0.1:5001/show_data_base")
     df = pd.DataFrame(tabla.json())    
-    max = len(df)
+    max_id = df["id"].max()
 
     id_buscar = st.number_input(
-    "Ingrese el ID :", 
-    min_value=1, 
-    max_value=max,
-    step=1,
+        "Ingrese el ID :", 
+        min_value=1, 
+        max_value=max_id,
+        step=1,
     )
+    st.caption("⚠️ Nota: Los IDs pueden no ser consecutivos si ya se han eliminado registros.")
+
+    if st.button("Buscar Predicción"):
+        respuesta = requests.get(f"http://127.0.0.1:5001/predict/{id_buscar}")
+        
+        if respuesta.status_code == 200:
+            data = respuesta.json()
+            df_result = pd.DataFrame([{
+                "id": data["id"],
+                "prediccion": data["prediccion"],
+                "probabilidad": data["probabilidad"],
+                "fecha": data["fecha"]
+            }])
+            st.dataframe(df_result, width="stretch")
+        else:
+            st.error("‼️ Registro no encontrado, pruebe con otro")
+
+# Borrar predicción por id (Conección por argumento)
+def borrar_prediccion_id():
+    st.subheader("🗑️ Borrar predicción por ID")
+    st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
+
+    # Función auxiliar
+    def cargar_bd():
+        tabla = requests.get("http://127.0.0.1:5001/show_data_base")
+        return pd.DataFrame(tabla.json())
+
+    # Guardar BD en session_state para actualizar automaticamente
+    if "df_bd" not in st.session_state:
+        st.session_state["df_bd"] = cargar_bd()
+
+    df = st.session_state["df_bd"]
+
+    st.markdown("### 📂 Base de datos actual")
+    st.dataframe(df[["id", "prediccion", "probabilidad", "fecha"]], width='stretch')
     
-    if st.button("Buscar Prediccion"):
-        respuesta = requests.get(f"http://127.0.0.1:5000/prediccion/{id_buscar}")
-        data = respuesta.json()
+    if df.empty:
+        st.warning("⚠️ La base de datos está vacía.")
+    
+    st.markdown("---")
 
-        #st.write("Codigo HTTP", data.status_code)
+    max_id = df["id"].max()
 
-        df = pd.DataFrame([{
-            "id": data["id"],
-            "prediccion": data["prediccion"],
-            "probabilidad": data["probabilidad"],
-            "date": data["date"]
-        }])
+    id_borrar = st.number_input("ID a eliminar:", min_value=1, max_value=max_id, step=1)
+    st.caption("⚠️ Nota: Los IDs pueden no ser consecutivos si ya se han eliminado registros.")
 
-        st.dataframe(df, width="stretch")
 
-# Podemos hacer una función para borrar una predicción (A poder ser una nueva vista)
-def borrar_prediccion():
-    pass
+    if st.button("🗑️ Eliminar Predicción", type="primary"):
+        respuesta = requests.delete(f"http://127.0.0.1:5001/delete_predict/{id_borrar}")
+
+        if respuesta.status_code == 200:
+            st.success("Predicción eliminada correctamente")
+            st.session_state["df_bd"] = cargar_bd()  # recarga BD
+            st.rerun()
+        else:
+            st.error("Error eliminando el registro")

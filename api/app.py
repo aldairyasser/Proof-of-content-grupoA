@@ -16,7 +16,7 @@ app = Flask(__name__)
 # -------------------------------
 # Cargar modelo
 # -------------------------------
-# Ruta absoluta del archivo actual
+# Ruta absoluta del archivo actual (CREATE)
 base_path = os.path.dirname(os.path.realpath(__file__))
 
 # Construir la ruta al modelo dentro de la carpeta "modelos"
@@ -56,10 +56,10 @@ with open(class_path, "r") as f:
 # Convertimos {clase → índice} a lista ordenada:
 clases = [nombre for nombre, idx in sorted(indices.items(), key=lambda x: x[1])]
 
-@app.route("/predict", methods=["POST"])
+@app.route("/predict", methods=["POST"]) #(POST)
 def predict():
 
-    data = request.get_json()   #  Se agrego get_json()
+    data = request.get_json()
 
     if "imagen_base64" not in data:
         return jsonify({"error": "Falta el campo imagen_base64"}), 400
@@ -89,12 +89,12 @@ def predict():
 # 3) Envio de predicción y guardado en BD
 # -------------------------------
 
-@app.route("/predict_save", methods=["POST"])
+@app.route("/predict_save", methods=["POST"]) #(POST y UPDATE)
 def predic_save():
         
         mi_bd.inicia_bd()
 
-        data = request.get_json()   #  Se agrego get_json()
+        data = request.get_json()
 
         nombre = data["clase_nombre"]
         acc = data["probabilidades"]
@@ -108,7 +108,7 @@ def predic_save():
 # 4) Mostrar base de datos
 # -------------------------------
 
-@app.route("/show_data_base", methods=["GET"])
+@app.route("/show_data_base", methods=["GET"]) #(READ)
 def showdatabase():
     registros = mi_bd.full_tabla()
     return jsonify(registros)
@@ -117,7 +117,7 @@ def showdatabase():
 # 5) Predicción por ID (FUTURA MEJORA LINK DE LA IMÁGEN)
 # -------------------------------
 
-@app.route('/prediccion/<int:id>', methods=['GET']) 
+@app.route('/predict/<int:id>', methods=['GET']) #(READ)
 def obtener_prediccion(id):
     try: 
         fila = mi_bd.search_id(id)
@@ -131,7 +131,30 @@ def obtener_prediccion(id):
         return jsonify({"error": "Error interno", "detalle": str(e)}), 500  
 
 # -------------------------------
-# ) Probabilidad de incendio
+# 6) Elminiar predicción por ID 
+# -------------------------------
+
+@app.route('/delete_predict/<int:id>', methods=['DELETE']) #(DELETE)
+def borrar_prediccion(id):
+    try: 
+        fila = mi_bd.search_and_delete_id(id)
+
+        if fila is None:
+            return jsonify({"error": "Predicción no encontrada"}), 404
+        
+        return jsonify({
+            "mensaje": "Predicción eliminada correctamente",
+            "borrar_prediccion": fila
+        }),200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Error interno", 
+            "detalle": str(e)
+        }), 500  
+
+# -------------------------------
+# 7) Probabilidad de incendio
 # -------------------------------
 @app.route("/fire_probability", methods=["POST"])
 def fire_probability():
@@ -220,33 +243,6 @@ def info():
         }
     })
 
-# -------------------------------
-# ) Listar todas las predicciones
-# -------------------------------
-
-@app.route("/predicciones", methods=["GET"])
-def obtener_predicciones():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM prediccion")
-        filas = cursor.fetchall()
-        conn.close()
-
-        lista = []
-        for fila in filas:
-            lista.append({
-                "id": fila["id"],
-                "prediccion": fila["prediccion"],
-                "probabilidad": fila["probabilidad"],
-                "date": fila["date"]
-            })
-
-        return jsonify(lista)
-
-    except Exception as e:
-        return jsonify({"error": "Error interno", "detalle": str(e)}), 500
 # -------------------------------
 # Ejecutar app
 # -------------------------------
