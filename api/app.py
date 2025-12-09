@@ -59,7 +59,7 @@ clases = [nombre for nombre, idx in sorted(indices.items(), key=lambda x: x[1])]
 @app.route("/predict", methods=["POST"])
 def predict():
 
-    data = request.get_json()   #  Se agrego get_json()
+    data = request.get_json()
 
     if "imagen_base64" not in data:
         return jsonify({"error": "Falta el campo imagen_base64"}), 400
@@ -94,7 +94,7 @@ def predic_save():
         
         mi_bd.inicia_bd()
 
-        data = request.get_json()   #  Se agrego get_json()
+        data = request.get_json()
 
         nombre = data["clase_nombre"]
         acc = data["probabilidades"]
