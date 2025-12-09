@@ -193,16 +193,16 @@ def fire_probability():
     #Reglas del negocio
     if brown_count > 0.40:
         riesgo = "Alto"
-    elif brown_count > 0.40:
+    elif brown_count > 0.20:
         riesgo = "Medio"
     else:
         riesgo = "Bajo"
 
-        return jsonify({
-            "porcentaje_marron": float(brown_count),
-            "porcentaje_verde": float(green_count),
-            "nivel_riesgo_incendio": riesgo
-        })
+    return jsonify({
+        "porcentaje_marron": float(brown_count),
+        "porcentaje_verde": float(green_count),
+        "nivel_riesgo_incendio": riesgo
+    })
 
 # -------------------------------
 # 8) Monitoreo
