@@ -240,7 +240,7 @@ def mostrar_bd():
 
 # Función que devuelve la BD por id (Conección por argumento) / Query
 def mostrar_bd_id():
-    st.subheader("🔎 Buscar prediccion por ID 🔍")
+    st.subheader("🔎 Buscar predicción por ID 🔍")
     
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
     tabla = requests.get("http://127.0.0.1:5000/show_data_base")
@@ -248,29 +248,28 @@ def mostrar_bd_id():
     max_id = df["id"].max()
 
     id_buscar = st.number_input(
-    "Ingrese el ID :", 
-    min_value=1, 
-    max_value=max_id,
-    step=1,
+        "Ingrese el ID :", 
+        min_value=1, 
+        max_value=max_id,
+        step=1,
     )
     st.caption("⚠️ Nota: Los IDs pueden no ser consecutivos si ya se han eliminado registros.")
 
-    
-    if st.button("Buscar Prediccion"):
+    if st.button("Buscar Predicción"):
         respuesta = requests.get(f"http://127.0.0.1:5000/predict/{id_buscar}")
-        data = respuesta.json()
+        
+        if respuesta.status_code == 200:
+            data = respuesta.json()
+            df_result = pd.DataFrame([{
+                "id": data["id"],
+                "prediccion": data["prediccion"],
+                "probabilidad": data["probabilidad"],
+                "fecha": data["fecha"]
+            }])
+            st.dataframe(df_result, width="stretch")
+        else:
+            st.error("‼️ Registro no encontrado, pruebe con otro")
 
-        #st.write("Codigo HTTP", data.status_code)
-
-        df = pd.DataFrame([{
-            "id": data["id"],
-            "prediccion": data["prediccion"],
-            "probabilidad": data["probabilidad"],
-            "fecha": data["fecha"]
-        }])
-        st.dataframe(df, width="stretch")
-    else:
-        st.error("‼️ Registro no encontrado, pruebe con otro")
 
 # Borrar predicción por id (Conección por argumento)
 def borrar_prediccion_id():
