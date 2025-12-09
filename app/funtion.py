@@ -143,6 +143,14 @@ def imagen_a_json(imagen):
 def predecir():
     st.subheader("🌄 Clasificador de biomas 🏞️")
 
+    with st.expander("📥 Descargar imágenes de test"):
+        with open("../data/3_test.zip", "rb") as f:
+            st.download_button(
+                label="Descargar ZIP con imágenes de test",
+                data=f,
+                file_name="test_images.zip",
+                mime="application/zip"
+            )
     # Lector de imágenes
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
     uploaded_file1 = st.file_uploader(
