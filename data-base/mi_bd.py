@@ -9,7 +9,6 @@ BD_PATH = Path("predicciones/predicciones.db")
 BD_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # Con esto se abre la conexion a la BBDD
-
 def pedir_conexion():
     
     conn = sqlite3.connect(BD_PATH)     # Esto es como la puerta para crear la base de datos, crear tablas y todo lo relacionado con esto
@@ -17,7 +16,6 @@ def pedir_conexion():
     return conn
 
 # Esto es la tabla que se va a usar reciviendo los datos de API
-
 def inicia_bd():
     
     conn = pedir_conexion()
@@ -29,15 +27,14 @@ def inicia_bd():
                id INTEGER PRIMARY KEY AUTOINCREMENT,    
                prediccion TEXT,
                probabilidad FLOAT,
-               date TIMESTAMP DEFAULT CURRENT_TIMESTAMP      
+               fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP      
              );
      ''')
 
     conn.commit() # guarda los cambios
     conn.close()  # cierra la conexión 
 
-# inserta la predicciony la probabilidad y las mete en la tabla para poder luego consultarlas
-
+# Con la prediccion y la probabilidad, las mete en la tabla y devuelve el id
 def mete_prediccion(prediccion: str,probabilidad: float):
     
     conn = pedir_conexion()
@@ -56,8 +53,7 @@ def mete_prediccion(prediccion: str,probabilidad: float):
 
     return prediccion_id
 
-
-# esta función devuelve todo el registro de la base de datos
+# Esta función devuelve todo el registro de la base de datos
 def full_tabla():
     
     conn = pedir_conexion()
@@ -66,7 +62,7 @@ def full_tabla():
         cursor = conn.cursor()
         cursor.execute('''
 
-                SELECT id, prediccion, probabilidad, date FROM predicciones;
+                SELECT id, prediccion, probabilidad, fecha FROM predicciones;
                    ''')
     
         filas = cursor.fetchall()  # devuelve todos los registros
@@ -76,8 +72,8 @@ def full_tabla():
     finally:
         conn.close()
 
+# Esta función en función a un id te devuelve el registro de esa predicción
 def search_id(id):
-
     conn = pedir_conexion()
     cursor = conn.cursor()
 
@@ -85,3 +81,21 @@ def search_id(id):
     fila = cursor.fetchone()
     conn.close()
     return dict(fila) if fila else None  
+
+# Esta función busca la predicción por id y la borra
+def search_and_delete_id(id):
+    
+    conn = pedir_conexion()
+    cursor = conn.cursor()
+
+    # Buscamos el id
+    cursor.execute("SELECT * FROM predicciones WHERE id = ?", (id,))
+    fila = cursor.fetchone()
+
+    if fila:
+        # Eliminar registro
+        cursor.execute("DELETE FROM predicciones WHERE id = ?", (id,))
+        conn.commit()
+
+    conn.close()
+    return dict(fila)  

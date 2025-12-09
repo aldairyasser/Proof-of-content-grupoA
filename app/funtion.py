@@ -14,7 +14,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Función de la pantalla home
+# Función de la pantalla home 
 def home():
 
     st.title("Proof Of Content (PoC)")
@@ -125,7 +125,7 @@ Análisis de marrón, textura y cambios mes a mes.
 
     '''Explicar storytelling y caso de uso'''
 
-# Función para convertir una imagena a json (se llama en la siguiente función)
+# Función para convertir una imagena a json (se usa en la siguiente función)
 def imagen_a_json(imagen):
     buffer = BytesIO()
     
@@ -139,7 +139,7 @@ def imagen_a_json(imagen):
         "imagen_base64": imagen_codificada
     }
 
-# Función que predice una imagen pasado del front (POST y UPDATE)
+# Función que predice una imagen pasado del front (PATH) (POST)
 def predecir():
     st.subheader("🌄 Clasificador de biomas 🏞️")
 
@@ -236,26 +236,28 @@ def mostrar_bd():
         tabla = requests.get("http://127.0.0.1:5000/show_data_base")
         df = pd.DataFrame(tabla.json())
 
-        st.dataframe(df[["id", "prediccion", "probabilidad", "date"]], width="stretch")
+        st.dataframe(df[["id", "prediccion", "probabilidad", "fecha"]], width="stretch")
 
-# Función que devuelve la BD por id (Conección por argumento)
+# Función que devuelve la BD por id (Conección por argumento) / Query
 def mostrar_bd_id():
     st.subheader("🔎 Buscar prediccion por ID 🔍")
     
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
     tabla = requests.get("http://127.0.0.1:5000/show_data_base")
     df = pd.DataFrame(tabla.json())    
-    max = len(df)
+    max_id = df["id"].max()
 
     id_buscar = st.number_input(
     "Ingrese el ID :", 
     min_value=1, 
-    max_value=max,
+    max_value=max_id,
     step=1,
     )
+    st.caption("⚠️ Nota: Los IDs pueden no ser consecutivos si ya se han eliminado registros.")
+
     
     if st.button("Buscar Prediccion"):
-        respuesta = requests.get(f"http://127.0.0.1:5000/prediccion/{id_buscar}")
+        respuesta = requests.get(f"http://127.0.0.1:5000/predict/{id_buscar}")
         data = respuesta.json()
 
         #st.write("Codigo HTTP", data.status_code)
@@ -264,11 +266,48 @@ def mostrar_bd_id():
             "id": data["id"],
             "prediccion": data["prediccion"],
             "probabilidad": data["probabilidad"],
-            "date": data["date"]
+            "fecha": data["fecha"]
         }])
-
         st.dataframe(df, width="stretch")
+    else:
+        st.error("‼️ Registro no encontrado, pruebe con otro")
 
-# Podemos hacer una función para borrar una predicción (A poder ser una nueva vista)
-def borrar_prediccion():
-    pass
+# Borrar predicción por id (Conección por argumento)
+def borrar_prediccion_id():
+    st.subheader("🗑️ Borrar predicción por ID")
+    st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
+
+    # Función auxiliar
+    def cargar_bd():
+        tabla = requests.get("http://127.0.0.1:5000/show_data_base")
+        return pd.DataFrame(tabla.json())
+
+    # Guardar BD en session_state para actualizar automaticamente
+    if "df_bd" not in st.session_state:
+        st.session_state["df_bd"] = cargar_bd()
+
+    df = st.session_state["df_bd"]
+
+    st.markdown("### 📂 Base de datos actual")
+    st.dataframe(df[["id", "prediccion", "probabilidad", "fecha"]], use_container_width=True)
+    
+    if df.empty:
+        st.warning("⚠️ La base de datos está vacía.")
+    
+    st.markdown("---")
+
+    max_id = df["id"].max()
+
+    id_borrar = st.number_input("ID a eliminar:", min_value=1, max_value=max_id, step=1)
+    st.caption("⚠️ Nota: Los IDs pueden no ser consecutivos si ya se han eliminado registros.")
+
+
+    if st.button("🗑️ Eliminar Predicción", type="primary"):
+        respuesta = requests.delete(f"http://127.0.0.1:5000/delete_predict/{id_borrar}")
+
+        if respuesta.status_code == 200:
+            st.success("Predicción eliminada correctamente")
+            st.session_state["df_bd"] = cargar_bd()  # recarga BD
+            st.rerun()
+        else:
+            st.error("Error eliminando el registro")
