@@ -16,114 +16,124 @@ st.set_page_config(
 
 # Función de la pantalla home 
 def home():
-
-    st.title("Proof Of Content (PoC)")
-    # Ruta absoluta del archivo actual
-    base_path = os.path.dirname(os.path.realpath(__file__))
-
-    # Construir la ruta al modelo dentro de la carpeta "modelos"
-    model_path = os.path.join(base_path, 'img', 'portada1.jpeg')
-    st.image(model_path, use_container_width="auto")
-
     if requests.get("http://127.0.0.1:5001/"):
-        st.markdown('''
-## 🔥 FireVision AI — Detección Temprana de Riesgo de Incendio 🛰️
 
----
+        # ---- Hero Section ----
+        st.markdown("""
+            <div style='text-align:center;'>
+                <h1 style='font-size:48px; margin-bottom:10px;'>FireVision AI</h1>
+                <h3 style='margin-top:-10px; color:#FF4B4B;'>Detección Temprana de Riesgo de Incendio</h3>
+                <p style='font-size:20px; opacity:0.85;'>
+                    Un sistema inteligente para anticipar incendios antes de que ocurran.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
-### 🌍 Contexto  
-Los incendios forestales son cada vez más frecuentes e intensos. Gobiernos, aseguradoras, eléctricas y parques naturales requieren **pronosticar el riesgo**, no reaccionar demasiado tarde.  
-Hoy dependen de mapas desactualizados, inspecciones manuales y reportes incompletos.  
-No existe un sistema visual automatizado a escala real… hasta ahora.
+        base_path = os.path.dirname(os.path.realpath(__file__))
 
----
+        # Construir la ruta al modelo dentro de la carpeta "modelos"
+        model_path = os.path.join(base_path, 'img', 'portada.jpeg')
+        st.image(model_path, use_container_width="auto")
 
-## 🚨 El Problema
-- No saben qué áreas están más secas o degradadas.  
-- No cuentan con un mapa dinámico basado en el estado real del terreno.  
-- No pueden priorizar brigadas, seguros o mantenimiento eléctrico.  
+        st.markdown("---")
 
-🔻 Esto genera sobrecostos, pérdidas millonarias, multas ambientales y riesgos para vidas y propiedades.
+        # ---- CONTEXTO ----
+        st.markdown("""
+            <h2>🌍 Contexto</h2>
+            <div class="tarjeta">
+                <p style="font-size:17px;">
+                    Los incendios forestales están aumentando en frecuencia, escala e intensidad.
+                    Instituciones públicas y privadas — aseguradoras eléctricas, parques naturales,
+                    gobiernos — necesitan anticiparse, no reaccionar cuando ya es tarde.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
----
+        # ---- EL PROBLEMA ----
+        st.markdown("""
+            <h2> - El Problema</h2>
+            <div class="tarjeta">
+                <ul style="font-size:17px;">
+                    <li>No saben qué áreas están más secas o degradadas.</li>
+                    <li>No cuentan con un mapa dinámico del estado real del terreno.</li>
+                    <li>No pueden priorizar brigadas, mantenimiento o inspecciones.</li>
+                </ul>
+                <p style="font-size:17px;">
+                    🔻 Esto provoca sobrecostes, incendios millonarios, multas ambientales
+                    y riesgos para vidas humanas.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
-## 🌟 La Oportunidad  
-Tu tecnología ya clasifica terrenos (bosque, prado, chaparral, montaña…).  
-Al añadir un análisis automático de **marronización** (vegetación seca), puedes crear un mapa real de probabilidad de incendio basado en apariencia visual actual.
+        # ---- OPORTUNIDAD ----
+        st.markdown("""
+            <h2> - La Oportunidad</h2>
+            <div class="tarjeta">
+                <p style="font-size:17px;">
+                    FireVision AI combina la clasificación automática del terreno con el análisis
+                    visual de sequedad para crear un mapa real del riesgo de incendio.
+                </p>
+                <p style="font-size:17px;">
+                    Esta tecnología permite <b>predecir zonas críticas</b> con antelación y tomar decisiones
+                    preventivas de forma automatizada.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
----
+        # ---- LA SOLUCIÓN ----
+        st.markdown("""
+            <h2> - La Solución: <span style='color:#88e788;'>FireVision AI</span></h2>
+            <div class="tarjeta">
+                <ul style="font-size:17px;">
+                    <li>📌 Clasificación automática del terreno.</li>
+                    <li>🌡️ Detector visual de sequedad (índice de marrón).</li>
+                    <li>📍 Geolocalización inteligente.</li>
+                    <li>🔥 Cálculo de riesgo por píxel o por zona (0–100).</li>
+                </ul>
+                <h4> - ¿Cómo funciona?</h4>
+                <ol style="font-size:17px;">
+                    <li>Cargas una imagen satelital o aérea.</li>
+                    <li>El sistema identifica el tipo de terreno.</li>
+                    <li>Analiza la sequedad y la vegetación degradada.</li>
+                    <li>Calcula un índice de probabilidad de incendio.</li>
+                </ol>
+            </div>
+        """, unsafe_allow_html=True)
 
-## 🚀 La Solución: **FireVision AI**  
-Plataforma que combina:
+        # ---- CASO REAL ----
+        st.markdown("""
+            <h2>🛰️ Caso Profesional — <b>SierraLuz</b> 🛰️</h2>
+            <div class="tarjeta">
+                <h4> - Problema</h4>
+                <p style="font-size:17px;">
+                    SierraLuz gestiona <b>2.800 km de líneas eléctricas</b> en zonas forestales.
+                    En 2024 sufrió 3 incendios por vegetación seca, perdiendo más de <b>18 millones de euros</b>.
+                </p>
+                <h4> - Solución implementada</h4>
+                <ul style="font-size:17px;">
+                    <li>Clasificación automática del terreno.</li>
+                    <li>Detección del nivel de sequedad visual.</li>
+                    <li>Cálculo del índice de riesgo 0–100.</li>
+                    <li>Alertas y reportes automáticos de zonas críticas.</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
 
-- Clasificación automática del terreno.  
-- Detector visual de sequedad (índice de marrón).  
-- Geolocalización inteligente.  
-- Cálculo de riesgo por píxel o por zona.
-
-### **Cómo funciona**
-1. Cargas una imagen satelital/aérea.  
-2. Se clasifica el tipo de terreno.  
-3. Se analiza la sequedad:  
-   - porcentaje de marrón  
-   - textura de vegetación seca  
-   - combustible natural acumulado  
-4. Se calcula un **índice de probabilidad de incendio (0–100)**.  
-
-Ejemplos:  
-- **Bosque + baja sequedad → Riesgo Bajo**  
-- **Prado seco + alta marronización → Riesgo Alto**  
-- **Chaparral + sequedad moderada → Riesgo Medio-Alto**
-
----
-
-# 📊 Caso Profesional — Cliente: **Compañía Eléctrica SierraLuz**
-
-### Problema
-SierraLuz opera **2,800 km de líneas eléctricas** en zonas forestales.  
-Tras 3 incendios en 2024 por vegetación seca, perdió **USD 18 millones**.  
-Necesitaban identificar puntos críticos y priorizar mantenimiento.
-
-### Solución aplicada con FireVision AI
-
-**Paso 1 — Clasificación del terreno**  
-bosque | chaparral | prado | desierto
-
-**Paso 2 — Detección de sequedad visual**  
-Análisis de marrón, textura y cambios mes a mes.
-
-**Paso 3 — Cálculo de riesgo (0–100)**
-
-**Paso 4 — Acciones automáticas**  
-- Reporte semanal a equipos  
-- Priorización de zonas rojas  
-- Alertas de evolución del riesgo  
-
----
-
-## 🎯 Resultados para SierraLuz
-
-- 🔻 **61% menos incendios causados por vegetación seca**  
-- 💰 **Ahorro anual: USD 7.4 millones**  
-- 🚚 **Mantenimiento 50% más eficiente**  
-- 🤝 Contrato renovado: **USD 450,000 / año**  
-
----
-
-## 💼 ¿Por qué las empresas pagan por esto?
-
-- Reduce riesgo legal y financiero.  
-- Evita incendios millonarios.  
-- Es simple, visual, automatizado y recurrente (SaaS).  
-
-💬 *“Es más barato pagar FireVision AI que pagar un incendio.”*
-
-''')
-    else:
-        st.subheader("Conectando...")
-
-
-    '''Explicar storytelling y caso de uso'''
+        # ---- VALOR EMPRESARIAL ----
+        st.markdown("""
+            <h2>💼 ¿Por qué las empresas pagan por esto?</h2>
+            <div class="tarjeta">
+                <ul style="font-size:17px;">
+                    <li>Reduce riesgo legal y financiero.</li>
+                    <li>Evita incendios millonarios.</li>
+                    <li>Ofrece valor inmediato y continuo (modelo SaaS).</li>
+                    <li>Es simple, visual y totalmente automatizado.</li>
+                </ul>
+                <p style="font-size:20px; text-align:center; margin-top:20px; color:#FF4B4B;">
+                    “Es más barato pagar FireVision AI que pagar un incendio.”
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
 # Función para convertir una imagena a json (se usa en la siguiente función)
 def imagen_a_json(imagen):
@@ -314,6 +324,7 @@ def borrar_prediccion_id():
         else:
             st.error("Error eliminando el registro")
 
+# Función que devuelve el registro por id por query
 def registro_por_query():
     st.subheader("🔎 Consultar predicción por URL (Query)")
 
