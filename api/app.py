@@ -266,8 +266,6 @@ def obtener_prediccion_query():
     except Exception as e:
         return jsonify({"error": "Error interno", "detalle": str(e)}), 500
 
-
-
 # -------------------------------
 # Ejecutar app
 # -------------------------------
