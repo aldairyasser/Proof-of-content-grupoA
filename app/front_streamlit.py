@@ -7,7 +7,8 @@ menu = st.sidebar.selectbox("PÁGINAS",
                              "🗄️ BASE DE DATOS", 
                              "🆔 REGISTRO POR ID",
                              "🗑️ BORRAR PREDICCION POR ID",
-                             "🌐 REGISTRO POR ID (QUERY)"))
+                             "🌐 REGISTRO POR ID (QUERY)",
+                             "🔥 PROBABILIDAD DE INCENDIO"))
 
 if menu == "🏠 HOME":
     ft.home()
@@ -26,6 +27,10 @@ elif menu == "🗑️ BORRAR PREDICCION POR ID":
 
 elif menu == "🌐 REGISTRO POR ID (QUERY)":
     ft.registro_por_query()
+
+elif menu == "🔥 PROBABILIDAD DE INCENDIO":
+    ft.riesgo_incendio()
+
 
 #Primero ejecuta Flask:
 #python app.py 

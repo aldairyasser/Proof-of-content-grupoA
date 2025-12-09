@@ -367,3 +367,83 @@ def registro_por_query():
 
         except Exception as e:
             st.error(f"❌ Error de conexión: {str(e)}")
+
+def riesgo_incendio():
+    st.subheader("🔥 Detección de Riesgo de Incendio 🌲")
+
+    base_path = os.path.dirname(os.path.realpath(__file__))
+
+    # ZIP de imágenes de ejemplo (opcional)
+    test_path = os.path.join(base_path, 'data', 'test_incendio.zip')
+
+    with st.expander("Descargar imágenes de ejemplo", icon='📷'):
+        with open(test_path, "rb") as f:
+            st.download_button(
+                label="Descargar imágenes de prueba",
+                data=f,
+                file_name="test_incendio.zip",
+                mime="application/zip",
+                icon='📥'
+            )
+    # --------------------------------------------
+    # Cargar imagen
+    # --------------------------------------------
+    st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
+    uploaded_file = st.file_uploader(
+        label="Sube una imagen de vegetación o paisaje:",
+        type=["jpg", "jpeg", "png"],
+        key="fire1"
+    )
+
+    img = None
+
+    if uploaded_file:
+        img = Image.open(uploaded_file)
+
+        if st.button("Ver imagen cargada", icon='🖼️'):
+            st.image(img, width="stretch")
+
+        st.markdown("---")
+
+        analizar_btn = st.button("Analizar riesgo", width="stretch", icon='🔥')
+
+        # --------------------------------------------
+        # PETICIÓN AL ENDPOINT fire_probability
+        # --------------------------------------------
+        if analizar_btn:
+
+            # Convertimos imagen a base64
+            datos = imagen_a_json(img)  # Si ya tienes esta función, úsala
+
+            respuesta = requests.post(
+                "http://127.0.0.1:5001/fire_probability",
+                json=datos
+            )
+
+            result = respuesta.json()
+
+            marron = result["porcentaje_marron"]
+            verde = result["porcentaje_verde"]
+            riesgo = result["nivel_riesgo_incendio"]
+
+            # -----------------------------------
+            # Estética del resultado
+            # -----------------------------------
+            st.markdown("### 🔍 Resultado del análisis")
+
+            if riesgo == "Alto":
+                st.error(f"🔥 **RIESGO ALTO DE INCENDIO**")
+            elif riesgo == "Medio":
+                st.warning(f"⚠️ **RIESGO MEDIO DE INCENDIO**")
+            else:
+                st.success(f"🌿 **RIESGO BAJO DE INCENDIO**")
+
+            st.markdown(
+                f"""
+                <div style="padding:15px; border-radius:12px;">
+                    <p><b>Porcentaje marrón:</b> {marron:.2%}</p>
+                    <p><b>Porcentaje verde:</b> {verde:.2%}</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
