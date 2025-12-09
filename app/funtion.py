@@ -144,7 +144,7 @@ def predecir():
     st.subheader("🌄 Clasificador de biomas 🏞️")
 
     with st.expander("📥 Descargar imágenes de test"):
-        with open("../data/3_test.zip", "rb") as f:
+        with open("./data/test.zip", "rb") as f:
             st.download_button(
                 label="Descargar ZIP con imágenes de test",
                 data=f,
@@ -269,7 +269,6 @@ def mostrar_bd_id():
             st.dataframe(df_result, width="stretch")
         else:
             st.error("‼️ Registro no encontrado, pruebe con otro")
-
 
 # Borrar predicción por id (Conección por argumento)
 def borrar_prediccion_id():
