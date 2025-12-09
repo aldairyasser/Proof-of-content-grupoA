@@ -272,4 +272,5 @@ def obtener_prediccion_query():
 # Ejecutar app
 # -------------------------------
 if __name__ == "__main__":
+    app.run(port=5001)
     app.run(debug=True)
