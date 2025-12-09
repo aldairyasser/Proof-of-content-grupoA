@@ -143,13 +143,18 @@ def imagen_a_json(imagen):
 def predecir():
     st.subheader("🌄 Clasificador de biomas 🏞️")
 
-    with st.expander("📥 Descargar imágenes de test"):
-        with open("./data/test.zip", "rb") as f:
+    base_path = os.path.dirname(os.path.realpath(__file__))
+
+    # Construir la ruta al modelo dentro de la carpeta "modelos"
+    test_path = os.path.join(base_path, 'data', 'test.zip')
+    with st.expander("Descargar imágenes de test", icon='📷'):
+        with open(test_path, "rb") as f:
             st.download_button(
                 label="Descargar ZIP con imágenes de test",
                 data=f,
                 file_name="test_images.zip",
-                mime="application/zip"
+                mime="application/zip",
+                icon='📥'
             )
     # Lector de imágenes
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
@@ -164,7 +169,7 @@ def predecir():
     if uploaded_file1:
         img = Image.open(uploaded_file1)
         
-        if st.button("Ver imagen cargada"):
+        if st.button("Ver imagen cargada", icon='🖼️'):
             st.image(img, width="stretch")
 
         st.markdown("---")
@@ -172,10 +177,10 @@ def predecir():
         col1, col2 = st.columns(2)
 
         with col1:
-            predecir_btn = st.button("🔍 Predecir", width="stretch")
+            predecir_btn = st.button("Predecir", width="stretch", icon='🪄')
 
         with col2:
-            guardar_btn = st.button("💾 Guardar predicción", width="stretch")
+            guardar_btn = st.button("Guardar predicción", width="stretch", icon='💾')
 
     # --------------------------------------------
     # Botón para enviar los datos al backend Flask
@@ -232,11 +237,10 @@ def mostrar_bd():
 
     st.markdown('<div class="tarjeta">', unsafe_allow_html=True)
 
-    if st.button("📄 Mostrar base de datos", width="stretch"):
-        tabla = requests.get("http://127.0.0.1:5001/show_data_base")
-        df = pd.DataFrame(tabla.json())
+    tabla = requests.get("http://127.0.0.1:5001/show_data_base")
+    df = pd.DataFrame(tabla.json())
 
-        st.dataframe(df[["id", "prediccion", "probabilidad", "fecha"]], width="stretch")
+    st.dataframe(df[["id", "prediccion", "probabilidad", "fecha"]], width="stretch")
 
 # Función que devuelve la BD por id (Conección por argumento) / Query
 def mostrar_bd_id():
@@ -255,7 +259,7 @@ def mostrar_bd_id():
     )
     st.caption("⚠️ Nota: Los IDs pueden no ser consecutivos si ya se han eliminado registros.")
 
-    if st.button("Buscar Predicción"):
+    if st.button("Buscar Predicción", icon='🔎'):
         respuesta = requests.get(f"http://127.0.0.1:5001/predict/{id_buscar}")
         
         if respuesta.status_code == 200:
@@ -268,7 +272,7 @@ def mostrar_bd_id():
             }])
             st.dataframe(df_result, width="stretch")
         else:
-            st.error("‼️ Registro no encontrado, pruebe con otro")
+            st.error("‼️ Registro no encontrado, pruebe con otro ‼️")
 
 # Borrar predicción por id (Conección por argumento)
 def borrar_prediccion_id():
@@ -300,7 +304,7 @@ def borrar_prediccion_id():
     st.caption("⚠️ Nota: Los IDs pueden no ser consecutivos si ya se han eliminado registros.")
 
 
-    if st.button("🗑️ Eliminar Predicción", type="primary"):
+    if st.button("Eliminar Predicción", type="primary", icon='🗑️'):
         respuesta = requests.delete(f"http://127.0.0.1:5001/delete_predict/{id_borrar}")
 
         if respuesta.status_code == 200:
@@ -309,3 +313,25 @@ def borrar_prediccion_id():
             st.rerun()
         else:
             st.error("Error eliminando el registro")
+
+def registro_por_query():
+    st.title("🌐 Ver contenido de una URL")
+
+    url = st.text_input("Ingrese la URL completa del endpoint:", 
+                        "http://127.0.0.1:5001/prediccion_query?id=5")
+
+    if st.button("Mostrar contenido"):
+        try:
+            respuesta = requests.get(url)
+
+            st.write(f"📌 Código de respuesta: {respuesta.status_code}")
+
+            try:
+                # Si es JSON, lo muestra bonito
+                st.json(respuesta.json())
+            except:
+                # Si no es JSON, muestra el texto tal cual
+                st.text(respuesta.text)
+
+        except Exception as e:
+            st.error(f"❌ Error de conexión: {e}")
