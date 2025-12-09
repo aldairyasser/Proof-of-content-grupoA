@@ -315,23 +315,44 @@ def borrar_prediccion_id():
             st.error("Error eliminando el registro")
 
 def registro_por_query():
-    st.title("🌐 Ver contenido de una URL")
+    st.subheader("🔎 Consultar predicción por URL (Query)")
 
-    url = st.text_input("Ingrese la URL completa del endpoint:", 
-                        "http://127.0.0.1:5001/prediccion_query?id=5")
+    st.markdown("""
+        <div class="tarjeta">
+            <p style='font-size:16px;'>
+                Introduce la URL del endpoint que deseas consultar.<br>
+                Estructura:<br>
+                <code>http://127.0.0.1:5001/prediccion_query?id=5</code>
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
-    if st.button("Mostrar contenido"):
+    # Campo de entrada elegante
+    url = st.text_input(
+        "URL del endpoint:",
+        value="",
+        placeholder="Introduce aquí una URL válida",
+        icon='📎'
+    )
+
+    st.markdown("---")
+
+    # Botón centrado y más estético
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        ejecutar = st.button("Mostrar contenido", type="primary", icon='🔍')
+
+    if ejecutar:
         try:
             respuesta = requests.get(url)
 
-            st.write(f"📌 Código de respuesta: {respuesta.status_code}")
+            st.markdown("### Respuesta del servidor")
 
+            # Intentamos mostrar JSON
             try:
-                # Si es JSON, lo muestra bonito
                 st.json(respuesta.json())
             except:
-                # Si no es JSON, muestra el texto tal cual
                 st.text(respuesta.text)
 
         except Exception as e:
-            st.error(f"❌ Error de conexión: {e}")
+            st.error(f"❌ Error de conexión: {str(e)}")
