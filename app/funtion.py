@@ -287,7 +287,7 @@ def borrar_prediccion_id():
     df = st.session_state["df_bd"]
 
     st.markdown("### 📂 Base de datos actual")
-    st.dataframe(df[["id", "prediccion", "probabilidad", "fecha"]], use_container_width=True)
+    st.dataframe(df[["id", "prediccion", "probabilidad", "fecha"]], width='stretch')
     
     if df.empty:
         st.warning("⚠️ La base de datos está vacía.")
