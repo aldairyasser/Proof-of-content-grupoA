@@ -21,8 +21,8 @@ def home():
         # ---- Hero Section ----
         st.markdown("""
             <div style='text-align:center;'>
-                <h1 style='font-size:48px; margin-bottom:10px;'>FireVision AI</h1>
-                <h3 style='margin-top:-10px; color:#FF4B4B;'>Detección Temprana de Riesgo de Incendio</h3>
+                <h1 style='font-size:48px; margin-bottom:10px;'>TerraGuard AI</h1>
+                <h3 style='margin-top:-10px; color:#88e788;'>Detección Temprana de Riesgo de Incendio</h3>
                 <p style='font-size:20px; opacity:0.85;'>
                     Un sistema inteligente para anticipar incendios antes de que ocurran.
                 </p>
@@ -70,7 +70,7 @@ def home():
             <h2> - La Oportunidad</h2>
             <div class="tarjeta">
                 <p style="font-size:17px;">
-                    FireVision AI combina la clasificación automática del terreno con el análisis
+                    TerraGuard AI combina la clasificación automática del terreno con el análisis
                     visual de sequedad para crear un mapa real del riesgo de incendio.
                 </p>
                 <p style="font-size:17px;">
@@ -82,7 +82,7 @@ def home():
 
         # ---- LA SOLUCIÓN ----
         st.markdown("""
-            <h2> - La Solución: <span style='color:#88e788;'>FireVision AI</span></h2>
+            <h2> - La Solución: <span style='color:#88e788;'>TerraGuard AI</span></h2>
             <div class="tarjeta">
                 <ul style="font-size:17px;">
                     <li>📌 Clasificación automática del terreno.</li>
@@ -126,11 +126,9 @@ def home():
                 <ul style="font-size:17px;">
                     <li>Reduce riesgo legal y financiero.</li>
                     <li>Evita incendios millonarios.</li>
-                    <li>Ofrece valor inmediato y continuo (modelo SaaS).</li>
+                    <li>Ofrece valor inmediato y continuo.</li>
                     <li>Es simple, visual y totalmente automatizado.</li>
                 </ul>
-                <p style="font-size:20px; text-align:center; margin-top:20px; color:#FF4B4B;">
-                    “Es más barato pagar FireVision AI que pagar un incendio.”
                 </p>
             </div>
         """, unsafe_allow_html=True)

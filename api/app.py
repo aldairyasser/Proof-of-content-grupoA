@@ -8,6 +8,8 @@ import json
 from flask import Flask, request, jsonify
 from datetime import datetime
 import sys
+import cv2
+import numpy as nps
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'data-base'))
 import mi_bd
 
@@ -178,9 +180,19 @@ def fire_probability():
     G = arr[:, :, 1]
     B = arr[:, :, 2]
 
+    hsv = cv2.cvtColor(arr, cv2.COLOR_RGB2HSV)
+
+    H = hsv[:, :, 0]
+    S = hsv[:, :, 1]
+    V = hsv[:, :, 2]
+
     #Determinar pixeles color marron
 
-    brown_pixels = (R > 90) & (G < 50) & (B < 80)
+    brown_pixels = (
+        (H > 5) & (H < 25) &   # tonos marrón / naranja
+        (S > 40) &             # suficiente saturación
+        (V > 50) & (V < 220)   # brillo típico de tierra
+    )
 
     #Verde (vegetacion)
     green_pixels = (G > R) & (G > B)
